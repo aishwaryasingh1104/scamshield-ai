@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ScamShield AI</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  
+  <div class="container">
+    
+    <header class="header">
+      <div class="logo-group">
+        <img src="icons/icon48.png" alt="Logo" class="logo">
+        <h1>ScamShield AI</h1>
+      </div>
+      <div class="ai-badge">AI Active</div>
+    </header>
+    
+    <div class="main-panel">
+      
+      <div class="info-row">
+        <span class="label">Current Site:</span>
+        <span id="url-display" class="value url-value">WAITING...</span>
+      </div>
+      
+      <div id="risk-score" class="hidden slide-up">
+        <div class="score-header">
+          <span class="label">AI Risk Prediction</span>
+          <span class="score-value"><span id="score-number">--</span>%</span>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+      </div>
+      
+      <div class="info-row hidden slide-up" id="status-row">
+        <span class="label">Status:</span>
+        <span id="status-text" class="value status-badge"></span>
+      </div>
+
+      <div class="info-row hidden slide-up" id="confidence-row">
+        <span class="label">Model Confidence:</span>
+        <span id="confidence-text" class="value confidence-badge">--%</span>
+      </div>
+      
+      <div id="diagnostics-panel" class="hidden slide-up-delayed">
+        <div class="label diagnostics-label">Feature Diagnostics:</div>
+        <ul id="reasons-list" class="diagnostics-list"></ul>
+      </div>
+
+    </div>
+
+    <button id="scan-btn" class="primary-btn">
+      <span class="btn-text">Run ML Analysis</span>
+      <div class="loader hidden"></div>
+    </button>
+    
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
