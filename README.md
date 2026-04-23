@@ -62,9 +62,9 @@ z = bias
   + (w_dots * f_dots)
   + (w_hyphens * f_hyphens)
   + (w_atSymbol * f_atSymbol)
-  + (w_words * f_suspiciousWords)
-  + (w_tld * f_riskyTld)
-  + (w_https * f_noHttps);
+  + (w_suspiciousWords * f_suspiciousWords)
+  + (w_riskyTld * f_riskyTld)
+  + (w_noHttps * f_noHttps);
 ```
 
 Then probability is calculated using Sigmoid Function:

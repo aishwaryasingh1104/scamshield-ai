@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const scanBtn = document.getElementById('scan-btn');
   const btnText = scanBtn.querySelector('.btn-text');
   const loader = scanBtn.querySelector('.loader');
-  
+
   const urlDisplay = document.getElementById('url-display');
   const riskScoreDiv = document.getElementById('risk-score');
   const scoreNumber = document.getElementById('score-number');
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnText.textContent = 'Running ML Model...';
     loader.classList.remove('hidden');
     scanBtn.disabled = true;
-    
+
     // Hide panels for animation reset
     riskScoreDiv.classList.add('hidden');
     statusRow.classList.add('hidden');
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     diagnosticsPanel.classList.add('hidden');
     reasonsList.innerHTML = '';
     progressBar.style.width = '0%';
-    
+
     try {
       let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (tab && tab.url) {
@@ -79,10 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function runMLPrediction(url) {
     const reasons = [];
     const lowerUrl = url.toLowerCase();
-    
+
     // Feature Extraction
     let f_length = url.length > 75 ? 1 : 0;
-    
+
     // Extract hostname properly to count dots and hyphens safely
     let hostname = "";
     let isHttps = 0;
@@ -98,10 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const f_dots = (hostname.match(/\./g) || []).length > 3 ? 1 : 0;
     const f_hyphens = (hostname.match(/-/g) || []).length > 2 ? 1 : 0;
     const f_atSymbol = url.includes('@') ? 1 : 0;
-    
+
     const scamWords = ['free', 'login', 'verify', 'gift', 'offer', 'bank', 'update'];
     const f_suspiciousWords = scamWords.filter(word => lowerUrl.includes(word)).length;
-    
+
     const suspiciousTLDs = ['.xyz', '.top', '.click', '.shop'];
     const f_riskyTld = suspiciousTLDs.some(tld => hostname.endsWith(tld)) ? 1 : 0;
     const f_noHttps = isHttps === 1 ? 0 : 1; // Feature is 1 if NOT secure
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (f_atSymbol) reasons.push({ text: "Contains '@' symbol (obfuscation risk)", type: "negative" });
     if (f_suspiciousWords > 0) reasons.push({ text: `Found ${f_suspiciousWords} phishing keyword(s)`, type: "negative" });
     if (f_riskyTld) reasons.push({ text: "Uses high-risk Top Level Domain", type: "negative" });
-    
+
     if (f_noHttps) {
       reasons.push({ text: "Not using secure HTTPS", type: "negative" });
     } else {
@@ -128,22 +128,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const w_atSymbol = 4.0;         // Huge penalty for '@' credential spoofing
     const w_suspiciousWords = 1.1;  // Penalty per scam word
     const w_riskyTld = 2.0;         // Penalty for cheap/spammy TLDs
-    const w_noHttps = 2.5;          // Penalty for lack of SSL
+    const w_noHttps = 5.0;          // Huge penalty for lack of SSL
 
     // Calculate z (Log-odds)
-    let z = w_bias 
-          + (w_length * f_length)
-          + (w_dots * f_dots)
-          + (w_hyphens * f_hyphens)
-          + (w_atSymbol * f_atSymbol)
-          + (w_suspiciousWords * f_suspiciousWords)
-          + (w_riskyTld * f_riskyTld)
-          + (w_noHttps * f_noHttps);
+    let z = w_bias
+      + (w_length * f_length)
+      + (w_dots * f_dots)
+      + (w_hyphens * f_hyphens)
+      + (w_atSymbol * f_atSymbol)
+      + (w_suspiciousWords * f_suspiciousWords)
+      + (w_riskyTld * f_riskyTld)
+      + (w_noHttps * f_noHttps);
 
     // Apply Sigmoid Function: 1 / (1 + e^-z)
     // This squashes the z score into a probability between 0 and 1.
     const probability = 1 / (1 + Math.exp(-z));
-    
+
     // Convert probability to a 0-100 Risk Score %
     const riskScore = Math.min(Math.round(probability * 100), 100);
 
@@ -167,10 +167,10 @@ document.addEventListener('DOMContentLoaded', () => {
     statusRow.classList.remove('hidden');
     confidenceRow.classList.remove('hidden');
     diagnosticsPanel.classList.remove('hidden');
-    
+
     progressBar.className = 'progress-bar';
     statusText.className = 'value status-badge';
-    
+
     // Animate score from 0
     let currentScore = 0;
     const interval = setInterval(() => {
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentScore += Math.ceil((score - currentScore) / 10) || 1;
       }
     }, 30);
-    
+
     // Animate progress bar width
     setTimeout(() => {
       // Ensure at minimum 3% width so the bar is slightly visible even at 0% score
